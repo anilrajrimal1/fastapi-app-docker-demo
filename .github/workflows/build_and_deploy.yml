@@ -1,0 +1,24 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH into VM to deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 13.234.118.198
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /srv/Projects/fastapi-app-docker-demo
+            git pull origin develop
+            docker build -t fastapi_app --build-arg GIT_COMMIT=$(git log -1 --format=%h) .
+            docker run -d --name fastapi_app -p 80:80 fastapi_app
