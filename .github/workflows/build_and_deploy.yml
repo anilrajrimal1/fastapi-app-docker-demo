@@ -21,5 +21,9 @@ jobs:
             cd /srv/Projects/fastapi-app-docker-demo
             git pull origin master
             cd fastapi-app/
-            docker build -t fastapi_app --build-arg GIT_COMMIT=$(git log -1 --format=%h) .
-            docker run -d --name fastapi_app -p 87:80 fastapi_app
+            COMMIT_HASH=$(git log -1 --format=%h)
+            IMAGE_TAG=fastapi_app:$COMMIT_HASH
+            docker build -t $IMAGE_TAG --build-arg GIT_COMMIT=$COMMIT_HASH .
+            docker stop fastapi_app || true
+            docker rm fastapi_app || true
+            docker run -d --name fastapi_app -p 87:80 $IMAGE_TAG
