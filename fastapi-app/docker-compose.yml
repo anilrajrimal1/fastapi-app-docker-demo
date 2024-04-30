@@ -1,0 +1,11 @@
+services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    ports:
+      - 80:80
+    entrypoint: ["uvicorn", "main:fastapi_app", "--host", "0.0.0.0", "--port", "80"]
